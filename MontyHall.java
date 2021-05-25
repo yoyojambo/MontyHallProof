@@ -9,9 +9,10 @@ public class MontyHall implements Runnable {
     private Random rand;
     public static int finished = 0;
     final static int iterations_per_thread = 100000000;
+    final static int quarts_of_iterations = iterations_per_thread / 4;
 
     public static void main(String[] args) throws InterruptedException {
-        MontyHall[] thread_arr = new MontyHall[3];
+        MontyHall[] thread_arr = new MontyHall[10];
         for (int i = 0; i < thread_arr.length; i++) {
             thread_arr[i] = new MontyHall("" + (i + 1));
             thread_arr[i].start();
@@ -22,7 +23,7 @@ public class MontyHall implements Runnable {
         int total_iterations = thread_arr.length * iterations_per_thread;
         double ratio = (double) swapWorked / total_iterations;
         int percentage = (int) (ratio * 100.0);
-        System.out.println("Percentage of success with swap: " + percentage + "\nRatio of success: " + ratio);
+        System.out.println("\n\nPercentage of success with swap: " + percentage + "%\nRatio of success: " + ratio + "\nTotal Simulations: " + iterations_per_thread * thread_arr.length);
     }
 
     public MontyHall(String thread_id) {
@@ -50,14 +51,14 @@ public class MontyHall implements Runnable {
             if (index_swap_door == prize_door) {
                 swap_success++;
             }
-            if (i % 2000 == 0) {
-                String debug = String.format("Thread %s is on iteration: %d\n#Successful Swaps: ", thread_id, i,
-                        swap_success);
-                System.out.println(debug);
+            if (i % quarts_of_iterations == 0) {
+                String progress = String.format("Thread #%s: %d%% Done | #Successful Swaps: %d | Total Swaps: %d", thread_id, ((i / quarts_of_iterations) * 25),
+                        swap_success, i);
+                System.out.println(progress);
             }
         }
         swapWorked += swap_success;
-        System.out.println("Thread #" + thread_id + " just finished");
+        System.out.println("Thread #" + thread_id + " finished");
         finished++;
     }
 
